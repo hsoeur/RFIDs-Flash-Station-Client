@@ -1,0 +1,30 @@
+trigger:
+- main
+
+pool:
+  name: Default
+  demands:
+   - agent.name -equals VM-DEVOPS
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '20.x'  # Assurez-vous que la version de Node.js correspond à celle utilisée par votre projet
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+  displayName: 'Install dependencies'
+
+- script: |
+    npm run build
+  displayName: 'Build'
+
+- task: WindowsMachineFileCopy@2
+  inputs:
+    SourcePath: './dist'
+    MachineNames: '192.168.1.104'
+    AdminUserName: 'AMPHI-PROD\Adminprod'
+    AdminPassword: 'Paris2024JO*'
+    TargetPath: '\\vm-app\Deploy\ui\UI TAG PROG'
+    CleanTargetBeforeCopy: true
