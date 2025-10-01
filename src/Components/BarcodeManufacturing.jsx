@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
 import {
-  TextField,
-  Button,
   Box,
-  CircularProgress,
   Typography,
+  TextField,
   Radio,
   RadioGroup,
   FormControlLabel,
 } from "@mui/material";
 import Instruction from "./Instruction";
+import StyledContainer, { ProfessionalButton } from "./StyledContainer";
 import config from "../config";
 
 const BarcodeManufacturing = ({ onResponse, onBarcodeChange }) => {
@@ -77,76 +76,105 @@ const BarcodeManufacturing = ({ onResponse, onBarcodeChange }) => {
     }
   };
 
-  return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-      }}
-    >
-      <Instruction text="Scanner le code barre de l'OF." />
-      <TextField
-        label="Scan ou entrez le code-barres"
-        variant="outlined"
-        value={barcode}
-        onChange={handleChange}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            handleSubmit(e);
-          }
-        }}
-        fullWidth
-        error={!!error}
-        helperText={error}
+  if (loading) {
+    return (
+      <StyledContainer 
+        loading={loading} 
+        loadingText="Chargement des données de l'OF..."
+        showLogo={false}
       />
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        disabled={loading}
-      >
-        {loading ? <CircularProgress size={24} /> : "Soumettre"}
-      </Button>
+    );
+  }
 
-      {solderingOptions.length === 2 && (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            gap: 2,
+  return (
+    <StyledContainer showLogo={false}>
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
+        <Instruction text="Scanner le code barre de l'OF." />
+        <TextField
+          label="Scan ou entrez le code-barres"
+          variant="outlined"
+          value={barcode}
+          onChange={handleChange}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSubmit(e);
+            }
           }}
+          fullWidth
+          error={!!error}
+          helperText={error}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              '&:hover fieldset': {
+                borderColor: '#4a6fa5',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#4a6fa5',
+              },
+            },
+          }}
+        />
+        <ProfessionalButton
+          type="submit"
+          variant="primary"
+          fullWidth
+          disabled={loading}
         >
-          <Typography variant="h6">Veuillez sélectionner une option :</Typography>
-          <RadioGroup
-            value={selectedSide}
-            onChange={(e) => setSelectedSide(e.target.value)}
+          Soumettre
+        </ProfessionalButton>
+
+        {solderingOptions.length === 2 && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: 2,
+              mt: 2,
+              p: 3,
+              backgroundColor: '#f9fafb',
+              borderRadius: '12px',
+              border: '1px solid #e0e0e0',
+            }}
           >
-            <FormControlLabel
-              value="FS"
-              control={<Radio />}
-              label="Face Soudure"
-            />
-            <FormControlLabel
-              value="FC"
-              control={<Radio />}
-              label="Face Composant"
-            />
-          </RadioGroup>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleOptionSelect}
-            disabled={!selectedSide}
-          >
-            Confirmer
-          </Button>
-        </Box>
-      )}
-    </Box>
+            <Typography variant="h6" sx={{ color: '#1a1a1a', fontWeight: 600 }}>
+              Veuillez sélectionner une option :
+            </Typography>
+            <RadioGroup
+              value={selectedSide}
+              onChange={(e) => setSelectedSide(e.target.value)}
+            >
+              <FormControlLabel
+                value="FS"
+                control={<Radio sx={{ color: '#4a6fa5', '&.Mui-checked': { color: '#4a6fa5' } }} />}
+                label="Face Soudure"
+              />
+              <FormControlLabel
+                value="FC"
+                control={<Radio sx={{ color: '#4a6fa5', '&.Mui-checked': { color: '#4a6fa5' } }} />}
+                label="Face Composant"
+              />
+            </RadioGroup>
+            <ProfessionalButton
+              variant="success"
+              onClick={handleOptionSelect}
+              disabled={!selectedSide}
+              fullWidth
+            >
+              Confirmer
+            </ProfessionalButton>
+          </Box>
+        )}
+      </Box>
+    </StyledContainer>
   );
 };
 

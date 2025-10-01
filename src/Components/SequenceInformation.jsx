@@ -1,117 +1,82 @@
 import React from "react";
-import { Box, Typography, Card, CardContent } from "@mui/material";
-import InfoIcon from "@mui/icons-material/Info"; // Import de l'icône
+import { Box, Typography } from "@mui/material";
 
 const SequenceInformation = ({ ManufacturingOrderUid, Product, Program, Station, Side }) => {
+  const InfoRow = ({ label, value }) => (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "10px 0",
+        borderBottom: "1px solid #e8e8e8",
+        '&:last-child': {
+          borderBottom: 'none',
+        }
+      }}
+    >
+      <Typography
+        sx={{
+          fontWeight: 500,
+          color: "#6b7280",
+          fontSize: "0.875rem",
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
+        }}
+      >
+        {label}
+      </Typography>
+      <Typography
+        sx={{
+          fontWeight: 500,
+          color: "#1f2937",
+          fontSize: "0.95rem",
+          fontFamily: "'Courier New', monospace",
+        }}
+      >
+        {value}
+      </Typography>
+    </Box>
+  );
+
   return (
     <Box
       sx={{
-        marginTop: 3,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        marginTop: 0,
+        marginBottom: 3,
       }}
     >
-      <Card
+      <Box
         sx={{
-          padding: 3,
-          borderRadius: "12px",
-          boxShadow: "0 6px 24px rgba(0, 0, 0, 0.12)",
-          maxWidth: "500px",
-          width: "100%",
-          backgroundColor: "#f9fafb",
-          border: "1px solid #d1d5db",
+          backgroundColor: "#ffffff",
+          border: "1px solid #e0e0e0",
+          borderRadius: "4px",
+          padding: "20px",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.06)",
         }}
       >
-        <CardContent>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 2,
-            }}
-          >
-            <InfoIcon sx={{ color: "#4caf50", marginRight: 1 }} fontSize="large" />
-            <Typography
-              variant="h6"
-              fontWeight="bold"
-              sx={{
-                textAlign: "center",
-                color: "#374151",
-                textTransform: "uppercase",
-                letterSpacing: "0.8px",
-              }}
-            >
-              Informations
-            </Typography>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-              color: "#4b5563",
-            }}
-          >
-            <Typography
-              variant="body1"
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: "1rem",
-              }}
-            >
-              <span style={{ fontWeight: "bold" }}>Order UID :</span>
-              {ManufacturingOrderUid}
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: "1rem",
-              }}
-            >
-              <span style={{ fontWeight: "bold" }}>Produit :</span>
-              {Product}
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: "1rem",
-              }}
-            >
-              <span style={{ fontWeight: "bold" }}>Face :</span>
-            {Side}
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              fontSize: "1rem",
-            }}
-          >
-              <span style={{ fontWeight: "bold" }}>Programme :</span>
-              {Program}
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: "1rem",
-              }}
-            >
-              <span style={{ fontWeight: "bold" }}>Station :</span>
-              {Station}
-            </Typography>
-          </Box>
-        </CardContent>
-      </Card>
+        <Typography
+          sx={{
+            fontSize: "0.75rem",
+            fontWeight: 600,
+            color: "#6b7280",
+            textTransform: "uppercase",
+            letterSpacing: "0.1em",
+            marginBottom: 2,
+            paddingBottom: 2,
+            borderBottom: "2px solid #4a6fa5",
+          }}
+        >
+          Informations de production
+        </Typography>
+        <Box>
+          <InfoRow label="Order UID" value={ManufacturingOrderUid} />
+          <InfoRow label="Produit" value={Product} />
+          <InfoRow label="Face" value={Side} />
+          <InfoRow label="Programme" value={Program} />
+          <InfoRow label="Station" value={Station} />
+        </Box>
+      </Box>
     </Box>
   );
 };

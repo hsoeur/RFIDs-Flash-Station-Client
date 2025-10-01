@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Instruction from "./Instruction";
+import StyledContainer, { ProfessionalButton } from "./StyledContainer";
 import stationImage from "../assets/station-map.png";
 
 const OperatorStation = ({ onStationSelect }) => {
@@ -39,109 +40,108 @@ const OperatorStation = ({ onStationSelect }) => {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 2,
-      }}
-    >
-      <Instruction text="Cliquez sur une station sur l'image pour sélectionner votre station." />
+    <StyledContainer showLogo={false}>
       <Box
         sx={{
-          position: "relative",
-          display: "inline-block",
-          border: "1px solid #ccc",
-          borderRadius: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 2,
         }}
-        onClick={handleImageClick}
       >
-        <img
-          src={stationImage}
-          alt="Station Map"
-          style={{
-            maxWidth: "100%",
-            height: "auto",
-            cursor: "pointer",
-          }}
-        />
-        {stations.map((station) => (
-          <React.Fragment key={station.id}>
-            <Box
-              sx={{
-                position: "absolute",
-                top: `${station.y - station.radius}px`,
-                left: `${station.x - station.radius}px`,
-                width: `${station.radius * 2}px`,
-                height: `${station.radius * 2}px`,
-                borderRadius: "50%",
-                backgroundColor: "rgba(0, 0, 255, 0.5)",
-                pointerEvents: "none",
-              }}
-            />
-            <Typography
-              sx={{
-                position: "absolute",
-                top: `${station.y}px`,
-                left: `${station.x}px`,
-                transform: "translate(-50%, -50%)",
-                color: "white",
-                fontWeight: "bold",
-                fontSize: "40px",
-                pointerEvents: "none",
-              }}
-            >
-              {station.id}
-            </Typography>
-          </React.Fragment>
-        ))}
-      </Box>
-      {selectedStation && (
+        <Instruction text="Cliquez sur une station sur l'image pour sélectionner votre station." />
         <Box
           sx={{
-            mt: 3,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 2,
-            backgroundColor: "#f4f4f4",
-            padding: 2,
-            borderRadius: 2,
-            border: "1px solid #ccc",
-            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+            position: "relative",
+            display: "inline-block",
+            border: "2px solid #e0e0e0",
+            borderRadius: '12px',
+            overflow: "hidden",
+            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
           }}
+          onClick={handleImageClick}
         >
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: "bold",
-              color: "#333",
-              textAlign: "center",
+          <img
+            src={stationImage}
+            alt="Station Map"
+            style={{
+              maxWidth: "100%",
+              height: "auto",
+              cursor: "pointer",
+              display: "block",
             }}
-          >
-            Confirmez votre sélection : {selectedStation}
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleValidation}
-            sx={{
-              padding: "10px 20px",
-              fontWeight: "bold",
-              fontSize: "16px",
-              textTransform: "none",
-              backgroundColor: "#007bff",
-              "&:hover": {
-                backgroundColor: "#0056b3",
-              },
-            }}
-          >
-            Valider
-          </Button>
+          />
+          {stations.map((station) => (
+            <React.Fragment key={station.id}>
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: `${station.y - station.radius}px`,
+                  left: `${station.x - station.radius}px`,
+                  width: `${station.radius * 2}px`,
+                  height: `${station.radius * 2}px`,
+                  borderRadius: "50%",
+                  backgroundColor: "rgba(74, 111, 165, 0.6)",
+                  pointerEvents: "none",
+                  transition: "all 0.3s ease",
+                  '&:hover': {
+                    backgroundColor: "rgba(74, 111, 165, 0.8)",
+                  }
+                }}
+              />
+              <Typography
+                sx={{
+                  position: "absolute",
+                  top: `${station.y}px`,
+                  left: `${station.x}px`,
+                  transform: "translate(-50%, -50%)",
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: "40px",
+                  pointerEvents: "none",
+                }}
+              >
+                {station.id}
+              </Typography>
+            </React.Fragment>
+          ))}
         </Box>
-      )}
-    </Box>
+        {selectedStation && (
+          <Box
+            sx={{
+              mt: 3,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+              backgroundColor: "#f9fafb",
+              padding: 3,
+              borderRadius: '12px',
+              border: "2px solid #4a6fa5",
+              boxShadow: "0 6px 20px rgba(74, 111, 165, 0.2)",
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
+                color: "#1a1a1a",
+                textAlign: "center",
+              }}
+            >
+              Confirmez votre sélection : {selectedStation}
+            </Typography>
+            <ProfessionalButton
+              variant="success"
+              onClick={handleValidation}
+              size="large"
+            >
+              Valider
+            </ProfessionalButton>
+          </Box>
+        )}
+      </Box>
+    </StyledContainer>
   );
 };
 

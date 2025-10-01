@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import solderingImage from "../assets/rfid.png";
+import StyledContainer from "./StyledContainer";
 import BarcodeManufacturing from "./BarcodeManufacturing";
 import OperatorStation from "./OperatorStation";
 import ProgStation from "./ProgStation";
 import LogTokens from "./LogTokens";
-import SequenceInformation from "./SequenceInformation"; // Importer SequenceInformation
+import SequenceInformation from "./SequenceInformation";
 import GeneralFunction from "./GeneralFunction";
 
 const SolderingProgramUi = () => {
@@ -46,25 +47,26 @@ const SolderingProgramUi = () => {
   
 
   return (
-    <>
+    <StyledContainer 
+      variant="page"
+      title="Programmation des Tags RFID"
+      subtitle="Programmation des tags RFID pour la machine de brasage sélectif"
+      showLogo={false}
+    >
       <Box
         sx={{
           display: "flex",
-          flexDirection: "row", // Toujours aligné en ligne
+          flexDirection: "row",
           gap: 3,
-          padding: 3,
-          border: "1px solid #ccc",
-          borderRadius: 2,
-          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-          maxWidth: "90%",
-          margin: "auto",
-          mt: 5,
+          maxWidth: "100%",
+          margin: "0 auto",
         }}
       >
         {/* Colonne gauche : SequenceInformation */}
         <Box
           sx={{
-            flex: 2, // Taille de la colonne gauche
+            flex: 2,
+            minWidth: "280px",
           }}
         >
           <SequenceInformation
@@ -81,53 +83,25 @@ const SolderingProgramUi = () => {
         {/* Colonne principale */}
         <Box
           sx={{
-            flex: 4, // Taille de la colonne principale
-            paddingLeft: 2,
+            flex: 4,
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          <Box sx={{ textAlign: "center", mb: 3 }}>
-            <img
-              src={solderingImage}
-              alt="Soldering Process"
-              style={{
-                maxWidth: "50%", // Réduit la largeur de l'image à 50% de son conteneur
-                height: "100px", // Maintient les proportions
-                borderRadius: "8px",
-              }}
-            />
-          </Box>
-
-          
-
-          <Typography
-            variant="h4"
-            component="h1"
-            gutterBottom
-            sx={{
-              textAlign: "center",
-              fontWeight: "bold",
-              color: "#333",
-              mb: 3,
-            }}
-          >
-            Programmation des Tags
-          </Typography>
           {!solderingData ? (
             <BarcodeManufacturing
               onResponse={handleBarcodeResponse}
-              onBarcodeChange={handleBarcodeTextChange} // Nouveau callback pour le texte
+              onBarcodeChange={handleBarcodeTextChange}
             />
           ) : (
             <>
               {!selectedStation ? (
-                <Box sx={{ mt: 3 }}>
-                  <OperatorStation onStationSelect={handleStationSelect} />
-                </Box>
+                <OperatorStation onStationSelect={handleStationSelect} />
               ) : (
                 <ProgStation
                   selectedStation={selectedStation}
                   solderingData={solderingData}
-                  onAddToken={handleAddToken} // Passer le gestionnaire pour ajouter un token
+                  onAddToken={handleAddToken}
                 />
               )}
             </>
@@ -139,15 +113,14 @@ const SolderingProgramUi = () => {
           <Box
             sx={{
               flex: 2,
+              minWidth: "280px",
             }}
           >
             <LogTokens tokens={readTokenResponses} />
           </Box>
         )}
       </Box>
-    </>
-    
-    
+    </StyledContainer>
   );
 };
 

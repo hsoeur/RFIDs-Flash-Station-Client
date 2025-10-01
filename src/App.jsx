@@ -1,16 +1,16 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
 import './App.css';
-import SolderingProgramUi from './Components/SolderingProgramUi'; // Assurez-vous que le chemin est correct
+import SolderingProgramUi from './Components/SolderingProgramUi';
 
 function App() {
   return (
-    <>
-      <main>
-        <SolderingProgramUi />
-      </main>
-    </>
+    <main style={{ 
+      minHeight: '100vh',
+      backgroundColor: '#ffffff',
+      padding: 0,
+      margin: 0,
+    }}>
+      <SolderingProgramUi />
+    </main>
   );
 }
 

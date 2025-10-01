@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Instruction from "./Instruction";
+import StyledContainer, { ProfessionalButton } from "./StyledContainer";
 import axios from "axios";
 import config from "../config";
 import progImage from "../assets/prog.jpg";
@@ -72,59 +73,62 @@ const ProgStation = ({ selectedStation, solderingData, onAddToken }) => {
   };
 
   return (
-    <Box
-      sx={{
-        padding: 3,
-        border: "1px solid #ccc",
-        borderRadius: 2,
-        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-        marginTop: 5,
-        textAlign: "center",
-      }}
-    >
-      <Instruction
-        text={instructionText}
-        image={instructionImage}
-        imageWidth="20%"
-        imageHeight="20%"
-        status={status}
-      />
-
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleTagPlaced}
-        sx={{ mt: 3 }}
-        disabled={loading}
+    <StyledContainer showLogo={false}>
+      <Box
+        sx={{
+          padding: 3,
+          border: "1px solid #e0e0e0",
+          borderRadius: '12px',
+          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+          marginTop: 5,
+          textAlign: "center",
+          backgroundColor: '#ffffff',
+        }}
       >
-        {loading ? "En cours..." : "Programmer le tag"}
-      </Button>
+        <Instruction
+          text={instructionText}
+          image={instructionImage}
+          imageWidth="20%"
+          imageHeight="20%"
+          status={status}
+        />
 
-      {error && (
-        <Box
-          sx={{
-            mt: 3,
-            padding: 2,
-            backgroundColor: "rgba(255, 0, 0, 0.1)",
-            border: "1px solid red",
-            borderRadius: 2,
-            animation: "shake 0.3s",
-          }}
+        <ProfessionalButton
+          variant="primary"
+          onClick={handleTagPlaced}
+          disabled={loading}
+          fullWidth
+          size="large"
         >
-          <Typography
-            variant="h6"
-            color="error"
+          {loading ? "En cours..." : "Programmer le tag"}
+        </ProfessionalButton>
+
+        {error && (
+          <Box
             sx={{
-              fontWeight: "bold",
-              textAlign: "center",
-              fontSize: "1.25rem",
+              mt: 3,
+              padding: 3,
+              backgroundColor: "#fdecea",
+              border: "2px solid #d32f2f",
+              borderRadius: '12px',
+              animation: "shake 0.3s",
             }}
           >
-            {error}
-          </Typography>
-        </Box>
-      )}
-    </Box>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: "bold",
+                textAlign: "center",
+                fontSize: "1.25rem",
+                color: "#d32f2f",
+              }}
+            >
+              {error}
+            </Typography>
+          </Box>
+        )}
+      </Box>
+    </StyledContainer>
   );
 };
 

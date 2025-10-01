@@ -1,6 +1,7 @@
 import React from "react";
-import { Box, Button } from "@mui/material";
-import RestartAltIcon from "@mui/icons-material/RestartAlt"; // Import de l'icône
+import { Box } from "@mui/material";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import { ProfessionalButton } from "./StyledContainer";
 
 const GeneralFunction = ({ onBackToBarcode }) => {
   return (
@@ -11,21 +12,13 @@ const GeneralFunction = ({ onBackToBarcode }) => {
         justifyContent: "center",
       }}
     >
-      <Button
-        variant="contained"
-        startIcon={<RestartAltIcon />} // Ajout de l'icône
+      <ProfessionalButton
+        variant="danger"
+        startIcon={<RestartAltIcon />}
         onClick={onBackToBarcode}
-        sx={{
-          backgroundColor: "#e91e63", // Couleur rose
-          color: "#fff", // Couleur du texte
-          "&:hover": {
-            backgroundColor: "#d81b60", // Couleur au survol
-          },
-          textTransform: "none", // Désactiver la capitalisation automatique
-        }}
       >
         Retour à l'écran d'accueil
-      </Button>
+      </ProfessionalButton>
     </Box>
   );
 };
