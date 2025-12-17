@@ -20,29 +20,23 @@ const ProgStation = ({ selectedStation, solderingData, onAddToken }) => {
     setError(null);
 
     try {
-      // 1. Appeler SendEscape
-      const sendEscapeResp = await axios.post(`${config.ApiHardware}/serial/SendEscape`);
+           // 1. Appeler SendEscape
+      await axios.post(`${config.ApiHardware}/serial/SendEscape`);
       console.log("SendEscape appelé avec succès");
-      console.log("SendEscape response:", sendEscapeResp?.data);
 
       // 2. Appeler SendToken avec les données dynamiques
-      const sendResponse = await axios.post(
+      await axios.post(
         `${config.ApiHardware}/serial/SendToken?tokenProgram=${solderingData.program}&tokenStation=${selectedStation}`
       );
       console.log("SendToken appelé avec succès");
-      console.log("SendToken response:", sendResponse?.data);
 
-      // Récupérer le token retourné par l'API et l'ajouter au tableau
-      const newToken = sendResponse?.data?.token;
-      if (newToken) {
-        console.log("Token programmé (SendToken):", newToken);
-        onAddToken(newToken);
-      }
+      // 3. Appeler ReadToken et récupérer la réponse
+      const response = await axios.get(`${config.ApiHardware}/serial/ReadToken?programInitialized=${solderingData.program}`);
+      const newToken = response.data;
 
-      // 3. (Optionnel) Ancienne lecture via ReadToken — laissée commentée
-      // const response = await axios.get(`${config.ApiHardware}/serial/ReadToken?programInitialized=${solderingData.program}`);
-      // const readToken = response.data;
-      // onAddToken(readToken);
+      console.log("ReadToken réponse :", newToken);
+
+      onAddToken(newToken);
 
       setInstructionText("Tag programmé avec succès !");
       setStatus("success"); // Succès
