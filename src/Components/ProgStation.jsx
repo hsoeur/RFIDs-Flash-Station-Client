@@ -21,22 +21,28 @@ const ProgStation = ({ selectedStation, solderingData, onAddToken }) => {
 
     try {
       // 1. Appeler SendEscape
-      await axios.post(`${config.ApiHardware}/serial/SendEscape`);
+      const sendEscapeResp = await axios.post(`${config.ApiHardware}/serial/SendEscape`);
       console.log("SendEscape appelé avec succès");
+      console.log("SendEscape response:", sendEscapeResp?.data);
 
       // 2. Appeler SendToken avec les données dynamiques
-      await axios.post(
+      const sendResponse = await axios.post(
         `${config.ApiHardware}/serial/SendToken?tokenProgram=${solderingData.program}&tokenStation=${selectedStation}`
       );
       console.log("SendToken appelé avec succès");
+      console.log("SendToken response:", sendResponse?.data);
 
-      // 3. Appeler ReadToken et récupérer la réponse
-      const response = await axios.get(`${config.ApiHardware}/serial/ReadToken?programInitialized=${solderingData.program}`);
-      const newToken = response.data;
+      // Récupérer le token retourné par l'API et l'ajouter au tableau
+      const newToken = sendResponse?.data?.token;
+      if (newToken) {
+        console.log("Token programmé (SendToken):", newToken);
+        onAddToken(newToken);
+      }
 
-      console.log("ReadToken réponse :", newToken);
-
-      onAddToken(newToken);
+      // 3. (Optionnel) Ancienne lecture via ReadToken — laissée commentée
+      // const response = await axios.get(`${config.ApiHardware}/serial/ReadToken?programInitialized=${solderingData.program}`);
+      // const readToken = response.data;
+      // onAddToken(readToken);
 
       setInstructionText("Tag programmé avec succès !");
       setStatus("success"); // Succès
@@ -57,9 +63,6 @@ const ProgStation = ({ selectedStation, solderingData, onAddToken }) => {
             break;
           case "INVALID_TOKENSTATION":
             setError("⚠️ Le TokenStation doit commencer par '000' et finir par un seul chiffre non nul.");
-            break;
-          case "INVALID_DIRECTION":
-            setError("⚠️ Les directions (A et B) doivent être 'r' ou 'l'.");
             break;
           default:
             setError("⚠️ Aucun Tag détecté. Veuillez poser un tag et vérifier l'appareil.");
