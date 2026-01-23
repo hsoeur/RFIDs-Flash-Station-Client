@@ -15,7 +15,8 @@ const RFIDReader = () => {
     setToken(null);
     try {
       // Met l'appareil dans l'état d'écoute puis lit le tag brut
-      await axios.post(`${config.ApiHardware}/serial/SendEscape`);
+      const escapePath = import.meta.env.PROD ? "/sendEscape" : "/serial/SendEscape";
+      await axios.post(`${config.ApiHardware}${escapePath}`);
       const response = await axios.get(`${config.ApiHardware}/serial/ReadTokenRaw`);
       setToken(response.data);
     } catch (err) {

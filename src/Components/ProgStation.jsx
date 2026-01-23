@@ -22,7 +22,8 @@ const ProgStation = ({ selectedStation, solderingData, onAddToken }) => {
 
     try {
            // 1. Appeler SendEscape
-      await axios.post(`${config.ApiHardware}/serial/SendEscape`);
+         const escapePath = import.meta.env.PROD ? "/sendEscape" : "/serial/SendEscape";
+         await axios.post(`${config.ApiHardware}${escapePath}`);
       console.log("SendEscape appelé avec succès");
 
       // 2. Appeler SendToken avec les données dynamiques
