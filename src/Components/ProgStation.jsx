@@ -43,7 +43,7 @@ const ProgStation = ({ selectedStation, solderingData, onAddToken }) => {
     } catch (err) {
       console.error("Une erreur est survenue :", err);
 
-      setStatus("error"); // Erreur
+      setStatus("error");
       if (err.response && err.response.data && err.response.data.error) {
         switch (err.response.data.error) {
           case "TAG_ALREADY_PROGRAMMED":
