@@ -26,9 +26,10 @@ const SolderingProgramUi = () => {
   };
 
   const handleStationSelect = (station) => {
-    if (station === "Station 1") setSelectedStation("1");
-    if (station === "Station 2") setSelectedStation("2");
-    if (station === "Station 3") setSelectedStation("3");
+    // Le format attendu par l'API: commence par '000' et finit par un chiffre non nul
+    if (station === "Station 1") setSelectedStation("0001");
+    if (station === "Station 2") setSelectedStation("0002");
+    if (station === "Station 3") setSelectedStation("0003");
   };
 
   const handleAddToken = (newToken) => {

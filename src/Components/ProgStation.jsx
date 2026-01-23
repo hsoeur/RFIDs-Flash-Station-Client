@@ -5,6 +5,7 @@ import StyledContainer, { ProfessionalButton } from "./StyledContainer";
 import axios from "axios";
 import config from "../config";
 import progImage from "../assets/prog.jpg";
+import RFIDReader from "./RFIDReader";
 
 const ProgStation = ({ selectedStation, solderingData, onAddToken }) => {
   const [loading, setLoading] = useState(false);
@@ -125,6 +126,8 @@ const ProgStation = ({ selectedStation, solderingData, onAddToken }) => {
           </Box>
         )}
       </Box>
+
+      <RFIDReader />
     </StyledContainer>
   );
 };
