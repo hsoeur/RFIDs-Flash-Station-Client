@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import Instruction from "./Instruction";
 import StyledContainer, { ProfessionalButton } from "./StyledContainer";
 import axios from "axios";
-import config from "../config";
+import { apiHardware } from "../api";
 import progImage from "../assets/prog.jpg";
 import RFIDReader from "./RFIDReader";
 
@@ -22,18 +22,15 @@ const ProgStation = ({ selectedStation, solderingData, onAddToken }) => {
 
     try {
            // 1. Appeler SendEscape
-         const escapePath = import.meta.env.PROD ? "/sendEscape" : "/serial/SendEscape";
-         await axios.post(`${config.ApiHardware}${escapePath}`);
+         await apiHardware.sendEscape();
       console.log("SendEscape appelé avec succès");
 
       // 2. Appeler SendToken avec les données dynamiques
-      await axios.post(
-        `${config.ApiHardware}/serial/SendToken?tokenProgram=${solderingData.program}&tokenStation=${selectedStation}`
-      );
+      await apiHardware.sendToken(solderingData.program, selectedStation);
       console.log("SendToken appelé avec succès");
 
       // 3. Appeler ReadToken et récupérer la réponse
-      const response = await axios.get(`${config.ApiHardware}/serial/ReadToken?programInitialized=${solderingData.program}`);
+      const response = await apiHardware.readToken(solderingData.program);
       const newToken = response.data;
 
       console.log("ReadToken réponse :", newToken);

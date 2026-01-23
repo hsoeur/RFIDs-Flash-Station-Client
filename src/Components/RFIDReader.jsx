@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import StyledContainer, { ProfessionalButton } from "./StyledContainer";
-import axios from "axios";
-import config from "../config";
+import { apiHardware } from "../api";
 
 const RFIDReader = () => {
   const [loading, setLoading] = useState(false);
@@ -15,9 +14,8 @@ const RFIDReader = () => {
     setToken(null);
     try {
       // Met l'appareil dans l'état d'écoute puis lit le tag brut
-      const escapePath = import.meta.env.PROD ? "/sendEscape" : "/serial/SendEscape";
-      await axios.post(`${config.ApiHardware}${escapePath}`);
-      const response = await axios.get(`${config.ApiHardware}/serial/ReadTokenRaw`);
+      await apiHardware.sendEscape();
+      const response = await apiHardware.readTokenRaw();
       setToken(response.data);
     } catch (err) {
       const apiErr = err?.response?.data?.error;

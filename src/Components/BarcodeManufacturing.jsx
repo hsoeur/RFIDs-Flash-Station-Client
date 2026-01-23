@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { apiData } from "../api";
 import {
   Box,
   Typography,
@@ -40,9 +40,7 @@ const BarcodeManufacturing = ({ onResponse, onBarcodeChange }) => {
     setError(null);
 
     try {
-      const result = await axios.get(
-        `${config.ApiData}/SolderingProgram/GetSolderingProgramByManufacturingOrderUidLatestOne?manufacturingOfUid=${manufacturingUid}`
-      );
+      const result = await apiData.getSolderingProgramByManufacturingOrderUidLatestOne(manufacturingUid);
 
       const data = result.data;
       console.log("API Response:", data);
