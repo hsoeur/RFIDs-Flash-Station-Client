@@ -19,6 +19,6 @@ export const apiHardware = {
 export const apiData = {
   getSolderingProgramByManufacturingOrderUidLatestOne: (manufacturingOfUid) =>
     axios.get(
-      `${config.ApiData}/SolderingProgram/GetSolderingProgramByManufacturingOrderUidLatestOne?manufacturingOfUid=${manufacturingOfUid}`
+      `${config.ApiData}/SolderingProgram/latest-by-manufacturing-order?manufacturingOfUid=${manufacturingOfUid}`
     ),
 };

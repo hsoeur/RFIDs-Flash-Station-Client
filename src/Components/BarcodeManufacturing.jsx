@@ -45,12 +45,8 @@ const BarcodeManufacturing = ({ onResponse, onBarcodeChange }) => {
       const data = result.data;
       console.log("API Response:", data);
 
-      if (data.length === 1) {
-        // S'il y a un seul objet, le transmettre directement
-        onResponse(data[0]);
-      } else if (data.length === 2) {
-        // S'il y a deux objets, stocker les options pour la sélection
-        setSolderingOptions(data);
+      if (data && data.solderingProgramUid) {
+        onResponse(data);
       } else {
         setError("Aucun programme trouvé pour ce code-barres.");
       }
