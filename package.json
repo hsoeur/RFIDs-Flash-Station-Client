@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:integration:data": "node --test --test-concurrency=1 tests/integration/api-data/soldering-programs.test.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

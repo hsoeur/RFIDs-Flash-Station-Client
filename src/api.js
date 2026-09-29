@@ -1,5 +1,6 @@
 import axios from "axios";
 import config from "./config";
+import { apiDataEndpoints } from "./apiDataEndpoints";
 
 axios.interceptors.request.use(
   (request) => {
@@ -51,6 +52,9 @@ export const apiHardware = {
 export const apiData = {
   getSolderingProgramByManufacturingOrderUidLatestOne: (manufacturingOfUid) =>
     axios.get(
-      `${config.ApiData}/SolderingProgram/latest-by-manufacturing-order?manufacturingOfUid=${manufacturingOfUid}`
+      apiDataEndpoints.getSolderingProgramByManufacturingOrderUidLatestOne(
+        config.ApiData,
+        manufacturingOfUid
+      )
     ),
 };
