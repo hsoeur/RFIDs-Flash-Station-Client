@@ -1,16 +1,13 @@
-import './App.css';
-import SolderingProgramUi from './Components/SolderingProgramUi';
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import SolderingProgramUi from "./Components/SolderingProgramUi";
+import theme from "./theme";
 
 function App() {
   return (
-    <main style={{ 
-      minHeight: '100vh',
-      backgroundColor: '#ffffff',
-      padding: 0,
-      margin: 0,
-    }}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <SolderingProgramUi />
-    </main>
+    </ThemeProvider>
   );
 }
 

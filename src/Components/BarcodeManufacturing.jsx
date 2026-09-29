@@ -1,182 +1,132 @@
-import React, { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Box, FormControlLabel, Radio, RadioGroup, TextField, Typography } from "@mui/material";
+import QrCodeScannerRoundedIcon from "@mui/icons-material/QrCodeScannerRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { apiData } from "../api";
 import {
-  Box,
-  Typography,
-  TextField,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-} from "@mui/material";
-import Instruction from "./Instruction";
-import StyledContainer, { ProfessionalButton } from "./StyledContainer";
-import config from "../config";
+  ActionFooter,
+  Feedback,
+  LoadingState,
+  ProfessionalButton,
+  SectionHeading,
+  Surface,
+} from "./StyledContainer";
 
 const BarcodeManufacturing = ({ onResponse, onBarcodeChange }) => {
-  const [barcode, setBarcode] = useState(""); // État pour le code-barres
-  const [loading, setLoading] = useState(false); // État pour le spinner
-  const [error, setError] = useState(null); // État pour les erreurs
-  const [solderingOptions, setSolderingOptions] = useState([]); // État pour les options
-  const [selectedSide, setSelectedSide] = useState(""); // État pour le côté sélectionné
+  const [barcode, setBarcode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [solderingOptions, setSolderingOptions] = useState([]);
+  const [selectedSide, setSelectedSide] = useState("");
+  const inputRef = useRef(null);
 
-  const handleChange = (e) => {
-    const value = e.target.value;
+  useEffect(() => { inputRef.current?.focus(); }, [error, solderingOptions.length]);
+
+  const handleChange = (event) => {
+    const value = event.target.value;
     setBarcode(value);
-    onBarcodeChange(value); // Transmet le texte au parent
+    setError(null);
+    onBarcodeChange(value);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Empêche le rechargement de la page
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (loading) return;
 
-    const barcodeRegex = /^OF\d{5}$/; // Doit commencer par "OF" suivi de 5 chiffres
+    const barcodeRegex = /^OF\d{5}$/;
     if (!barcodeRegex.test(barcode)) {
-      setError("Le code-barres doit commencer par 'OF' suivi de 5 chiffres.");
+      setError("Saisissez un identifiant au format OF suivi de 5 chiffres, par exemple OF12345.");
+      inputRef.current?.focus();
       return;
     }
 
-    const manufacturingUid = barcode.slice(-5); // Récupère les 5 derniers caractères
-
+    const manufacturingUid = barcode.slice(-5);
     setLoading(true);
     setError(null);
+    setSolderingOptions([]);
 
     try {
       const result = await apiData.getSolderingProgramByManufacturingOrderUidLatestOne(manufacturingUid);
-
       const data = result.data;
-      console.log("API Response:", data);
-
       if (Array.isArray(data)) {
-        if (data.length === 1) {
-          onResponse(data[0]);
-        } else if (data.length > 1) {
-          setSolderingOptions(data);
-        } else {
-          setError("Aucun programme trouvé pour ce code-barres.");
-        }
-      } else if (data && data.solderingProgramUid) {
+        if (data.length === 1) onResponse(data[0]);
+        else if (data.length > 1) setSolderingOptions(data);
+        else setError("Aucun programme actif n’a été trouvé pour cet ordre de fabrication.");
+      } else if (data?.solderingProgramUid) {
         onResponse(data);
       } else {
-        setError("Aucun programme trouvé pour ce code-barres.");
+        setError("Aucun programme actif n’a été trouvé pour cet ordre de fabrication.");
       }
-    } catch (err) {
-      console.error("Error fetching data:", err);
-      setError("Erreur lors de la récupération des données. Veuillez réessayer.");
+    } catch (requestError) {
+      console.error("Error fetching data:", requestError);
+      setError("Impossible de récupérer le programme. Vérifiez la connexion à l’API Data, puis réessayez.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleOptionSelect = () => {
-    // Trouver l'objet correspondant au côté sélectionné
-    const selectedOption = solderingOptions.find(
-      (option) => option.side === selectedSide
-    );
+    const selectedOption = solderingOptions.find((option) => option.side === selectedSide);
     if (selectedOption) {
-      onResponse(selectedOption); // Transmettre l'objet sélectionné au parent
-      setSolderingOptions([]); // Réinitialiser les options
-      setSelectedSide(""); // Réinitialiser la sélection
+      onResponse(selectedOption);
+      setSolderingOptions([]);
+      setSelectedSide("");
     }
   };
 
-  if (loading) {
-    return (
-      <StyledContainer 
-        loading={loading} 
-        loadingText="Chargement des données de l'OF..."
-        showLogo={false}
-      />
-    );
-  }
-
   return (
-    <StyledContainer showLogo={false}>
-      <Box
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-        }}
-      >
-        <Instruction text="Scanner le code barre de l'OF." />
-        <TextField
-          label="Scan ou entrez le code-barres"
-          variant="outlined"
-          value={barcode}
-          onChange={handleChange}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSubmit(e);
-            }
-          }}
-          fullWidth
-          error={!!error}
-          helperText={error}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              '&:hover fieldset': {
-                borderColor: '#4a6fa5',
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: '#4a6fa5',
-              },
-            },
-          }}
-        />
-        <ProfessionalButton
-          type="submit"
-          variant="primary"
-          fullWidth
-          disabled={loading}
-        >
-          Soumettre
-        </ProfessionalButton>
-
-        {solderingOptions.length === 2 && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              gap: 2,
-              mt: 2,
-              p: 3,
-              backgroundColor: '#f9fafb',
-              borderRadius: '12px',
-              border: '1px solid #e0e0e0',
-            }}
-          >
-            <Typography variant="h6" sx={{ color: '#1a1a1a', fontWeight: 600 }}>
-              Veuillez sélectionner une option :
-            </Typography>
-            <RadioGroup
-              value={selectedSide}
-              onChange={(e) => setSelectedSide(e.target.value)}
-            >
-              <FormControlLabel
-                value="FS"
-                control={<Radio sx={{ color: '#4a6fa5', '&.Mui-checked': { color: '#4a6fa5' } }} />}
-                label="Face Soudure"
-              />
-              <FormControlLabel
-                value="FC"
-                control={<Radio sx={{ color: '#4a6fa5', '&.Mui-checked': { color: '#4a6fa5' } }} />}
-                label="Face Composant"
-              />
-            </RadioGroup>
-            <ProfessionalButton
-              variant="success"
-              onClick={handleOptionSelect}
-              disabled={!selectedSide}
-              fullWidth
-            >
-              Confirmer
-            </ProfessionalButton>
+    <Surface component="section" aria-labelledby="scan-title">
+      <SectionHeading title="Scanner l’ordre de fabrication" description="Le programme actif sera récupéré automatiquement." />
+      {loading ? (
+        <LoadingState text="Recherche du programme de soudure…" minHeight={220} />
+      ) : (
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5, color: "primary.main" }}>
+            <QrCodeScannerRoundedIcon aria-hidden="true" />
+            <Typography variant="body2" sx={{ fontWeight: 700 }}>Lecteur prêt — le curseur est placé dans le champ</Typography>
           </Box>
-        )}
-      </Box>
-    </StyledContainer>
+          <TextField
+            inputRef={inputRef}
+            autoFocus
+            fullWidth
+            label="Code de l’ordre de fabrication"
+            placeholder="OF12345"
+            value={barcode}
+            onChange={handleChange}
+            error={Boolean(error)}
+            helperText={error || "Format attendu : OF suivi de 5 chiffres"}
+            inputProps={{ autoComplete: "off", inputMode: "text" }}
+          />
+          {error && <Feedback severity="error" title="L’ordre de fabrication n’a pas pu être chargé" sx={{ mt: 2 }}>{error}</Feedback>}
+          <ActionFooter>
+            <ProfessionalButton type="submit" startIcon={<SearchRoundedIcon />} disabled={!barcode || loading}>
+              Rechercher le programme
+            </ProfessionalButton>
+          </ActionFooter>
+        </Box>
+      )}
+
+      {solderingOptions.length > 1 && (
+        <Box sx={{ mt: 3, pt: 3, borderTop: "1px solid", borderColor: "divider" }}>
+          <Typography component="h3" variant="h3">Quelle face allez-vous traiter ?</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 1.5 }}>Plusieurs programmes actifs sont disponibles pour cet OF.</Typography>
+          <RadioGroup value={selectedSide} onChange={(event) => setSelectedSide(event.target.value)}>
+            {solderingOptions.map((option) => (
+              <FormControlLabel
+                key={option.solderingProgramUid}
+                value={option.side}
+                control={<Radio />}
+                label={`${option.side === "FS" ? "Face soudure" : option.side === "FC" ? "Face composants" : `Face ${option.side}`} — programme ${option.program}`}
+                sx={{ minHeight: 48, mx: 0, px: 0.5, borderRadius: 2, "&:has(.Mui-checked)": { bgcolor: "primary.light" } }}
+              />
+            ))}
+          </RadioGroup>
+          <ActionFooter>
+            <ProfessionalButton onClick={handleOptionSelect} disabled={!selectedSide}>Continuer avec cette face</ProfessionalButton>
+          </ActionFooter>
+        </Box>
+      )}
+    </Surface>
   );
 };
 

@@ -1,26 +1,10 @@
-import React from "react";
-import { Box } from "@mui/material";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import { ProfessionalButton } from "./StyledContainer";
 
-const GeneralFunction = ({ onBackToBarcode }) => {
-  return (
-    <Box
-      sx={{
-        mt: 3,
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
-      <ProfessionalButton
-        variant="danger"
-        startIcon={<RestartAltIcon />}
-        onClick={onBackToBarcode}
-      >
-        Retour à l'écran d'accueil
-      </ProfessionalButton>
-    </Box>
-  );
-};
+const GeneralFunction = ({ onBackToBarcode }) => (
+  <ProfessionalButton variant="secondary" startIcon={<RestartAltRoundedIcon />} onClick={onBackToBarcode}>
+    Recommencer avec un autre OF
+  </ProfessionalButton>
+);
 
 export default GeneralFunction;

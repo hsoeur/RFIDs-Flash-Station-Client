@@ -1,132 +1,68 @@
-import React, { useState } from "react";
-import { Box, Typography } from "@mui/material";
-import Instruction from "./Instruction";
-import StyledContainer, { ProfessionalButton } from "./StyledContainer";
-import axios from "axios";
+import { useState } from "react";
+import MemoryRoundedIcon from "@mui/icons-material/MemoryRounded";
+import { Box } from "@mui/material";
 import { apiHardware } from "../api";
 import progImage from "../assets/prog.jpg";
+import Instruction from "./Instruction";
 import RFIDReader from "./RFIDReader";
+import { ActionFooter, Feedback, ProfessionalButton, SectionHeading, Surface } from "./StyledContainer";
+
+const errorMessages = {
+  TAG_ALREADY_PROGRAMMED: "Le tag contient déjà le bon programme. Aucun nouvel envoi n’est nécessaire.",
+  INVALID_PROGRAM_ENTERED: "Le programme lu sur le tag ne correspond pas au programme attendu.",
+  INVALID_TOKENPROGRAM: "Le programme du tag doit contenir au moins trois chiffres différents de zéro.",
+  INVALID_TOKENSTATION: "Le numéro de station du tag doit commencer par 000 et se terminer par un chiffre non nul.",
+};
 
 const ProgStation = ({ selectedStation, solderingData, onAddToken }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [instructionText, setInstructionText] = useState(
-    "En attente d'un TAG : Veuillez poser un tag pour commencer..."
-  );
-  const [instructionImage, setInstructionImage] = useState(progImage);
   const [status, setStatus] = useState("default");
 
   const handleTagPlaced = async () => {
+    if (loading) return;
     setLoading(true);
     setError(null);
+    setStatus("default");
 
     try {
-           // 1. Appeler SendEscape
-         await apiHardware.sendEscape();
-      console.log("SendEscape appelé avec succès");
-
-      // 2. Appeler SendToken avec les données dynamiques
+      await apiHardware.sendEscape();
       await apiHardware.sendToken(solderingData.program, selectedStation);
-      console.log("SendToken appelé avec succès");
-
-      // 3. Appeler ReadToken et récupérer la réponse
       const response = await apiHardware.readToken(solderingData.program);
-      const newToken = response.data;
-
-      console.log("ReadToken réponse :", newToken);
-
-      onAddToken(newToken);
-
-      setInstructionText("Tag programmé avec succès !");
-      setStatus("success"); // Succès
-    } catch (err) {
-      console.error("Une erreur est survenue :", err);
-
+      onAddToken(response.data);
+      setStatus("success");
+    } catch (requestError) {
+      console.error("Une erreur est survenue :", requestError);
+      const code = requestError?.response?.data?.error;
+      setError(errorMessages[code] ?? (code
+        ? "Aucun tag n’a été détecté. Repositionnez le tag et vérifiez le programmateur."
+        : "Le programmateur ne répond pas. Vérifiez sa connexion avant de réessayer."));
       setStatus("error");
-      if (err.response && err.response.data && err.response.data.error) {
-        switch (err.response.data.error) {
-          case "TAG_ALREADY_PROGRAMMED":
-            setError("⚠️ Le token contient déjà le bon programme.");
-            break;
-          case "INVALID_PROGRAM_ENTERED":
-            setError("⚠️ Le TokenProgram programmé n'est pas le bon.");
-            break;
-          case "INVALID_TOKENPROGRAM":
-            setError("⚠️ Le TokenProgram doit contenir au moins 3 chiffres différents de 0.");
-            break;
-          case "INVALID_TOKENSTATION":
-            setError("⚠️ Le TokenStation doit commencer par '000' et finir par un seul chiffre non nul.");
-            break;
-          default:
-            setError("⚠️ Aucun Tag détecté. Veuillez poser un tag et vérifier l'appareil.");
-        }
-      } else {
-        setError("⚠️ Une erreur réseau s'est produite. Vérifiez votre connexion.");
-      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <StyledContainer showLogo={false}>
-      <Box
-        sx={{
-          padding: 3,
-          border: "1px solid #e0e0e0",
-          borderRadius: '12px',
-          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-          marginTop: 5,
-          textAlign: "center",
-          backgroundColor: '#ffffff',
-        }}
-      >
+    <Box sx={{ display: "grid", gap: 2.5 }}>
+      <Surface component="section" aria-labelledby="program-title">
+        <SectionHeading title="Programmer le prochain tag" description="Une seule programmation sera lancée à chaque validation." />
         <Instruction
-          text={instructionText}
-          image={instructionImage}
-          imageWidth="20%"
-          imageHeight="20%"
+          text={status === "success" ? "Tag programmé et relu avec succès. Vous pouvez placer le tag suivant." : status === "error" ? "La programmation n’a pas pu être confirmée." : "Placez un tag sur le programmateur, puis lancez la programmation."}
+          image={progImage}
+          imageWidth={150}
           status={status}
         />
-
-        <ProfessionalButton
-          variant="primary"
-          onClick={handleTagPlaced}
-          disabled={loading}
-          fullWidth
-          size="large"
-        >
-          {loading ? "En cours..." : "Programmer le tag"}
-        </ProfessionalButton>
-
-        {error && (
-          <Box
-            sx={{
-              mt: 3,
-              padding: 3,
-              backgroundColor: "#fdecea",
-              border: "2px solid #d32f2f",
-              borderRadius: '12px',
-              animation: "shake 0.3s",
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: "bold",
-                textAlign: "center",
-                fontSize: "1.25rem",
-                color: "#d32f2f",
-              }}
-            >
-              {error}
-            </Typography>
-          </Box>
-        )}
-      </Box>
-
+        {error && <Feedback severity="error" title="Programmation interrompue" sx={{ mt: 2 }}>{error}</Feedback>}
+        {status === "success" && <Feedback severity="success" title="Programmation confirmée" sx={{ mt: 2 }}>Le tag a été relu et ajouté à l’historique de cette session.</Feedback>}
+        <ActionFooter>
+          <ProfessionalButton size="large" startIcon={<MemoryRoundedIcon />} onClick={handleTagPlaced} disabled={loading}>
+            {loading ? "Programmation en cours…" : "Programmer le tag"}
+          </ProfessionalButton>
+        </ActionFooter>
+      </Surface>
       <RFIDReader />
-    </StyledContainer>
+    </Box>
   );
 };
 

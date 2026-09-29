@@ -1,442 +1,132 @@
-import React from 'react';
-import { Box, Typography, CircularProgress } from '@mui/material';
-import logoHorizon from '../assets/logo.jpg';
+import { Alert, Box, Button, CircularProgress, Typography } from "@mui/material";
+import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 
-/**
- * Composant de style réutilisable pour les interfaces Horizon Telecom
- * Encapsule les styles communs des composants AuthenticateUser et ManufacturingOrderNotifications
- */
-const StyledContainer = ({ 
-  children, 
-  variant = 'page', // 'page', 'auth', 'loading', 'error'
-  title,
-  subtitle,
-  loading = false,
-  error = null,
-  loadingText = 'Chargement...',
-  errorText = null,
-  stats = null,
-  actions = null,
-  className = '',
-  showLogo = true,
-  ...props 
-}) => {
-  // Rendu pour l'état de chargement
-  if (loading) {
-    return (
-      <Box 
-        className={`loading-container ${className}`}
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: variant === 'auth' ? '100vh' : '400px',
-          width: '100%',
-          backgroundColor: '#ffffff',
-          position: 'relative',
-          overflow: 'hidden'
-        }}
-        {...props}
-      >
-        {showLogo && <BackgroundLogo src={logoHorizon} alt="Horizon Telecom" opacity={0.15} />}
-        <CircularProgress sx={{ color: '#4a6fa5', mb: 2, zIndex: 1 }} />
-        <Typography sx={{ color: '#1a1a1a', fontSize: '0.875rem', zIndex: 1 }}>
-          {loadingText}
-        </Typography>
-      </Box>
-    );
-  }
+const toneConfig = {
+  neutral: { foreground: "#475467", background: "#F2F4F7", dot: "#98A2B3" },
+  info: { foreground: "#24377A", background: "#EEF1FF", dot: "#3156B7" },
+  success: { foreground: "#0E6245", background: "#EAF7F1", dot: "#16805C" },
+  warning: { foreground: "#8A470C", background: "#FFF5E9", dot: "#C96A12" },
+  error: { foreground: "#B42318", background: "#FFF0EF", dot: "#F0443E" },
+};
 
-  // Rendu pour l'état d'erreur
-  if (error) {
-    return (
-      <Box 
-        className={`error-container ${className}`}
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: variant === 'auth' ? '100vh' : '400px',
-          width: '100%',
-          backgroundColor: '#ffffff',
-          position: 'relative',
-          overflow: 'hidden'
-        }}
-        {...props}
-      >
-        {showLogo && <BackgroundLogo src={logoHorizon} alt="Horizon Telecom" opacity={0.15} />}
-        <Typography sx={{ color: '#d32f2f', fontSize: '1.1rem', zIndex: 1 }}>
-          {errorText || error}
-        </Typography>
-      </Box>
-    );
-  }
-
-  // Rendu pour l'authentification (centré)
-  if (variant === 'auth') {
-    return (
-      <Box 
-        className={`auth-container ${className}`}
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-          width: '100%',
-          backgroundColor: '#ffffff',
-          position: 'relative',
-          overflow: 'hidden'
-        }}
-        {...props}
-      >
-        {showLogo && <BackgroundLogo src={logoHorizon} alt="Horizon Telecom" opacity={0.15} />}
-        <Box sx={{
-          maxWidth: '440px',
-          width: '100%',
-          padding: '48px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          position: 'relative',
-          zIndex: 1
-        }}>
-          {title && (
-            <Typography 
-              variant="h5" 
-              sx={{ 
-                color: '#1a1a1a', 
-                fontWeight: 600,
-                fontSize: '1.5rem',
-                mb: 1,
-                textAlign: 'center',
-                letterSpacing: '-0.02em'
-              }}
-            >
-              {title}
-            </Typography>
-          )}
-          
-          {subtitle && (
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                color: '#666666',
-                mb: 4,
-                fontSize: '0.875rem',
-                textAlign: 'center'
-              }}
-            >
-              {subtitle}
-            </Typography>
-          )}
-
-          {children}
-        </Box>
-      </Box>
-    );
-  }
-
-  // Rendu pour les pages (par défaut)
+export const StatusBadge = ({ children, tone = "neutral" }) => {
+  const config = toneConfig[tone] ?? toneConfig.neutral;
   return (
-    <Box 
-      className={`page-container ${className}`}
-      sx={{ 
-        width: '100%', 
-        height: '100%',
-        position: 'relative',
-        overflow: 'hidden',
-        backgroundColor: '#ffffff'
-      }}
-      {...props}
-    >
-      {showLogo && <BackgroundLogo src={logoHorizon} alt="Horizon Telecom" opacity={0.25} />}
-      {/* Header de page */}
-      {(title || subtitle || stats || actions) && (
-        <Box 
-          className="page-header"
-          sx={{ 
-            borderBottom: '1px solid #e0e0e0',
-            padding: '20px 32px',
-            backgroundColor: 'transparent',
-            position: 'relative',
-            zIndex: 1
-          }}
-        >
-          <Box sx={{ 
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            mb: 3
-          }}>
-            <Box>
-              {title && (
-                <Typography 
-                  variant="h5" 
-                  sx={{ 
-                    color: '#1a1a1a', 
-                    fontWeight: 600,
-                    fontSize: '1.5rem',
-                    letterSpacing: '-0.02em'
-                  }}
-                >
-                  {title}
-                </Typography>
-              )}
-              {subtitle && (
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: '#666666',
-                    mt: 0.5,
-                    fontSize: '0.875rem'
-                  }}
-                >
-                  {subtitle}
-                </Typography>
-              )}
-            </Box>
-            
-            {(stats || actions) && (
-              <Box sx={{ 
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2
-              }}>
-                {stats}
-                {actions}
-              </Box>
-            )}
-          </Box>
-        </Box>
-      )}
-
-      {/* Contenu principal */}
-      <Box sx={{ 
-        padding: '32px',
-        position: 'relative',
-        zIndex: 1
-      }}>
-        {children}
-      </Box>
+    <Box component="span" sx={{ display: "inline-flex", alignItems: "center", gap: 0.75, minHeight: 30, px: 1.25, borderRadius: "999px", color: config.foreground, bgcolor: config.background, fontSize: "0.78rem", lineHeight: 1, fontWeight: 700, whiteSpace: "nowrap" }}>
+      <Box component="span" aria-hidden="true" sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: config.dot }} />
+      {children}
     </Box>
   );
 };
 
-/**
- * Composant pour les éléments de statistiques dans le header
- */
-export const StatBadge = ({ children, color = '#dc2626', ...props }) => (
-  <Typography 
-    variant="body2" 
-    sx={{ 
-      color,
-      fontSize: '0.875rem',
-      fontWeight: 600
-    }}
-    {...props}
-  >
-    {children}
-  </Typography>
-);
-
-/**
- * Composant pour les actions dans le header
- */
-export const HeaderActions = ({ children, ...props }) => (
-  <Box 
-    sx={{ 
-      display: 'flex',
-      alignItems: 'center',
-      gap: 2
-    }}
-    {...props}
-  >
-    {children}
-  </Box>
-);
-
-/**
- * Composant pour l'état vide
- */
-export const EmptyState = ({ children, text = 'Aucune donnée disponible' }) => (
-  <Box sx={{
-    textAlign: 'center',
-    padding: '80px 20px',
-    color: '#999999'
-  }}>
-    {children || (
-      <Typography variant="body1" sx={{ fontSize: '0.95rem' }}>
-        {text}
-      </Typography>
-    )}
-  </Box>
-);
-
-/**
- * Composant pour l'arrière-plan avec logo
- */
-export const BackgroundLogo = ({ src, alt = 'Logo', opacity = 0.35 }) => (
-  <Box
-    sx={{
-      position: 'fixed',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      zIndex: 0,
-      opacity,
-      pointerEvents: 'none',
-      width: '800px',
-      height: 'auto',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}
-  >
-    <Box
-      component="img"
-      src={src}
-      alt={alt}
-      sx={{
-        width: '100%',
-        height: 'auto',
-        objectFit: 'contain'
-      }}
-    />
-  </Box>
-);
-
-/**
- * Composant de bouton professionnel standardisé
- */
-export const ProfessionalButton = ({ 
-  children, 
-  variant = 'primary', // 'primary', 'secondary', 'success', 'warning', 'danger', 'info'
-  startIcon,
-  endIcon,
-  disabled = false,
-  fullWidth = false,
-  size = 'medium', // 'small', 'medium', 'large'
-  ...props 
-}) => {
-  const variantStyles = {
-    primary: {
-      backgroundColor: '#4a6fa5',
-      '&:hover': {
-        backgroundColor: '#3a5a85',
-        transform: 'translateY(-1px)',
-        boxShadow: '0 4px 12px rgba(74, 111, 165, 0.3)'
-      }
-    },
-    secondary: {
-      backgroundColor: '#5a6c7d',
-      '&:hover': {
-        backgroundColor: '#4a5c6d',
-        transform: 'translateY(-1px)',
-        boxShadow: '0 4px 12px rgba(90, 108, 125, 0.3)'
-      }
-    },
-    success: {
-      backgroundColor: '#2d7a4f',
-      '&:hover': {
-        backgroundColor: '#246a3f',
-        transform: 'translateY(-1px)',
-        boxShadow: '0 4px 12px rgba(45, 122, 79, 0.3)'
-      }
-    },
-    warning: {
-      backgroundColor: '#d4a017',
-      color: '#1a1a1a',
-      '&:hover': {
-        backgroundColor: '#b88b14',
-        transform: 'translateY(-1px)',
-        boxShadow: '0 4px 12px rgba(212, 160, 23, 0.3)'
-      }
-    },
-    danger: {
-      backgroundColor: '#c23934',
-      '&:hover': {
-        backgroundColor: '#a82e2a',
-        transform: 'translateY(-1px)',
-        boxShadow: '0 4px 12px rgba(194, 57, 52, 0.3)'
-      }
-    },
-    info: {
-      backgroundColor: '#5b4a8f',
-      '&:hover': {
-        backgroundColor: '#4a3a7f',
-        transform: 'translateY(-1px)',
-        boxShadow: '0 4px 12px rgba(91, 74, 143, 0.3)'
-      }
-    }
-  };
-
-  const sizeStyles = {
-    small: {
-      height: 42,
-      fontSize: '0.875rem',
-      padding: '8px 16px'
-    },
-    medium: {
-      height: 52,
-      fontSize: '0.95rem',
-      padding: '12px 24px'
-    },
-    large: {
-      height: 62,
-      fontSize: '1rem',
-      padding: '16px 32px'
-    }
-  };
-
-  return (
-    <Box
-      component="button"
-      disabled={disabled}
-      sx={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 1.5,
-        width: fullWidth ? '100%' : 'auto',
-        color: variant === 'warning' ? '#1a1a1a' : '#ffffff',
-        border: 'none',
-        borderRadius: '8px',
-        fontWeight: 500,
-        letterSpacing: '0.02em',
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-        fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-        opacity: disabled ? 0.5 : 1,
-        position: 'relative',
-        overflow: 'hidden',
-        '&:active': {
-          transform: disabled ? 'none' : 'translateY(0)',
-          boxShadow: disabled ? '0 2px 4px rgba(0, 0, 0, 0.1)' : '0 1px 2px rgba(0, 0, 0, 0.1)'
-        },
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)',
-          pointerEvents: 'none'
-        },
-        ...variantStyles[variant],
-        ...sizeStyles[size]
-      }}
-      {...props}
-    >
-      {startIcon && <Box sx={{ display: 'flex', alignItems: 'center' }}>{startIcon}</Box>}
-      {children}
-      {endIcon && <Box sx={{ display: 'flex', alignItems: 'center' }}>{endIcon}</Box>}
+export const ApplicationShell = ({ children, status = "Poste prêt", statusTone = "success" }) => (
+  <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
+    <Box component="header" sx={{ bgcolor: "background.paper", borderBottom: "1px solid", borderColor: "divider" }}>
+      <Box sx={{ width: "100%", maxWidth: 1600, mx: "auto", px: { xs: 2, sm: 3, lg: 5 }, minHeight: { xs: 64, sm: 72 }, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 0 }}>
+          <Box aria-hidden="true" sx={{ width: 38, height: 38, borderRadius: 2.25, bgcolor: "primary.main", color: "primary.contrastText", display: "grid", placeItems: "center", fontSize: "1.15rem", fontWeight: 800, letterSpacing: "-0.04em", flex: "0 0 auto" }}>A</Box>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography sx={{ fontWeight: 800, letterSpacing: "0.055em", lineHeight: 1.1 }}>AMPHITECH</Typography>
+            <Typography variant="body2" color="text.secondary" noWrap>Programmation RFID</Typography>
+          </Box>
+        </Box>
+        <StatusBadge tone={statusTone}>{status}</StatusBadge>
+      </Box>
     </Box>
-  );
+    <Box component="main" sx={{ width: "100%", maxWidth: 1600, mx: "auto", px: { xs: 2, sm: 3, lg: 5 }, py: { xs: 2.5, sm: 3.5, lg: 4 } }}>
+      {children}
+    </Box>
+  </Box>
+);
+
+export const PageTitle = ({ eyebrow, title, description }) => (
+  <Box sx={{ maxWidth: 860, mb: { xs: 2.5, sm: 3.5 } }}>
+    {eyebrow && <Typography variant="body2" sx={{ color: "primary.main", fontWeight: 800, mb: 0.75 }}>{eyebrow}</Typography>}
+    <Typography component="h1" variant="h1">{title}</Typography>
+    {description && <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 720 }}>{description}</Typography>}
+  </Box>
+);
+
+export const ContextBar = ({ items }) => (
+  <Box component="section" aria-label="Contexte de production" sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", md: `repeat(${Math.min(items.length, 5)}, minmax(0, 1fr))` }, mb: { xs: 2.5, sm: 3 }, bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: 3, overflow: "hidden", boxShadow: "0 1px 2px rgba(16, 24, 40, 0.03)" }}>
+    {items.map(({ label, value }, index) => (
+      <Box key={label} sx={{ minWidth: 0, px: { xs: 1.5, sm: 2 }, py: 1.5, borderRight: { xs: index % 2 === 0 ? "1px solid" : "none", md: index < items.length - 1 ? "1px solid" : "none" }, borderBottom: { xs: index < items.length - (items.length % 2 || 2) ? "1px solid" : "none", md: "none" }, borderColor: "divider" }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.25 }}>{label}</Typography>
+        <Typography className="tabular-number" sx={{ fontWeight: 700, overflowWrap: "anywhere" }}>{value || "—"}</Typography>
+      </Box>
+    ))}
+  </Box>
+);
+
+export const Surface = ({ children, component = "section", sx, ...props }) => (
+  <Box component={component} sx={{ bgcolor: "background.paper", border: "1px solid", borderColor: "divider", borderRadius: { xs: 2.5, sm: 3 }, boxShadow: "0 6px 20px rgba(16, 24, 40, 0.055)", p: { xs: 2, sm: 3 }, ...sx }} {...props}>{children}</Box>
+);
+
+export const SectionHeading = ({ title, description, action }) => (
+  <Box sx={{ display: "flex", alignItems: { xs: "flex-start", sm: "center" }, justifyContent: "space-between", gap: 2, mb: 2.5 }}>
+    <Box>
+      <Typography component="h2" variant="h2">{title}</Typography>
+      {description && <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{description}</Typography>}
+    </Box>
+    {action}
+  </Box>
+);
+
+export const ActionFooter = ({ children }) => (
+  <Box sx={{ display: "flex", flexDirection: { xs: "column-reverse", sm: "row" }, justifyContent: "flex-end", gap: 1.5, mt: 3, pt: 2.5, borderTop: "1px solid", borderColor: "divider", "& > *": { width: { xs: "100%", sm: "auto" } } }}>{children}</Box>
+);
+
+const feedbackIcon = {
+  success: <CheckCircleOutlineRoundedIcon fontSize="inherit" />,
+  error: <ErrorOutlineRoundedIcon fontSize="inherit" />,
+  warning: <WarningAmberRoundedIcon fontSize="inherit" />,
+  info: <InfoOutlinedIcon fontSize="inherit" />,
+};
+
+export const Feedback = ({ severity = "info", title, children, sx }) => (
+  <Alert severity={severity} icon={feedbackIcon[severity]} role={severity === "error" ? "alert" : "status"} sx={{ alignItems: "flex-start", border: "1px solid", borderColor: `${severity}.main`, bgcolor: `${severity}.light`, color: "text.primary", borderRadius: 2.5, "& .MuiAlert-icon": { color: `${severity}.main`, fontSize: "1.35rem", mt: 0.15 }, ...sx }}>
+    {title && <Typography sx={{ fontWeight: 700, mb: 0.25 }}>{title}</Typography>}
+    <Typography variant="body2" component="div">{children}</Typography>
+  </Alert>
+);
+
+export const LoadingState = ({ text = "Chargement…", minHeight = 260 }) => (
+  <Box role="status" aria-live="polite" sx={{ minHeight, display: "grid", placeItems: "center", textAlign: "center", p: 3 }}>
+    <Box>
+      <CircularProgress size={32} thickness={4} />
+      <Typography sx={{ mt: 1.5, fontWeight: 600 }}>{text}</Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Merci de patienter quelques instants.</Typography>
+    </Box>
+  </Box>
+);
+
+export const EmptyState = ({ children, text = "Aucune donnée disponible" }) => (
+  <Box sx={{ textAlign: "center", px: 2, py: 5, color: "text.secondary" }}>{children || <Typography variant="body2">{text}</Typography>}</Box>
+);
+
+export const Metric = ({ label, value }) => (
+  <Box sx={{ minWidth: 0, p: 1.75, bgcolor: "#F8FAFC", borderRadius: 2 }}>
+    <Typography variant="body2" color="text.secondary">{label}</Typography>
+    <Typography className="tabular-number" sx={{ mt: 0.5, fontWeight: 800, overflowWrap: "anywhere" }}>{value ?? "—"}</Typography>
+  </Box>
+);
+
+export const ProfessionalButton = ({ children, variant = "primary", startIcon, endIcon, fullWidth = false, size = "medium", ...props }) => {
+  const muiVariant = variant === "secondary" ? "outlined" : "contained";
+  const color = ["success", "warning", "error"].includes(variant) ? variant : variant === "danger" ? "error" : "primary";
+  return <Button variant={muiVariant} color={color} startIcon={startIcon} endIcon={endIcon} fullWidth={fullWidth} size={size} {...props}>{children}</Button>;
+};
+
+export const StatBadge = ({ children, color = "text.secondary", ...props }) => <Typography variant="body2" color={color} sx={{ fontWeight: 700 }} {...props}>{children}</Typography>;
+export const HeaderActions = ({ children, ...props }) => <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }} {...props}>{children}</Box>;
+
+const StyledContainer = ({ children, title, subtitle, loading = false, error = null, loadingText = "Chargement…", sx, ...props }) => {
+  if (loading) return <LoadingState text={loadingText} />;
+  if (error) return <Feedback severity="error">{error}</Feedback>;
+  return <Surface sx={sx} {...props}>{(title || subtitle) && <SectionHeading title={title} description={subtitle} />}{children}</Surface>;
 };
 
 export default StyledContainer;
-

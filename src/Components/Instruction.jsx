@@ -1,83 +1,23 @@
-import React from "react";
-import { Typography, Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
-const Instruction = ({ text, image, imageWidth = "100%", imageHeight = "auto", status = "default" }) => {
-  const getStatusConfig = () => {
-    switch (status) {
-      case "success":
-        return {
-          borderColor: "#2d7a4f",
-          backgroundColor: "#ffffff",
-          accentColor: "#2d7a4f",
-        };
-      case "error":
-        return {
-          borderColor: "#d32f2f",
-          backgroundColor: "#ffffff",
-          accentColor: "#d32f2f",
-        };
-      default:
-        return {
-          borderColor: "#e0e0e0",
-          backgroundColor: "#ffffff",
-          accentColor: "#4a6fa5",
-        };
-    }
-  };
+const statusConfig = {
+  default: { icon: <InfoOutlinedIcon />, color: "primary.main", background: "primary.light" },
+  success: { icon: <CheckCircleOutlineRoundedIcon />, color: "success.main", background: "success.light" },
+  error: { icon: <ErrorOutlineRoundedIcon />, color: "error.main", background: "error.light" },
+};
 
-  const config = getStatusConfig();
-
+const Instruction = ({ text, image, imageWidth = 160, imageHeight = "auto", status = "default" }) => {
+  const config = statusConfig[status] ?? statusConfig.default;
   return (
-    <Box
-      sx={{
-        backgroundColor: config.backgroundColor,
-        border: `1px solid ${config.borderColor}`,
-        borderLeft: `4px solid ${config.accentColor}`,
-        borderRadius: "4px",
-        marginBottom: 3,
-        padding: "16px 20px",
-        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.06)",
-      }}
-    >
-      <Typography 
-        sx={{
-          color: "#2c3e50",
-          fontWeight: 500,
-          fontSize: "0.95rem",
-          lineHeight: 1.6,
-          letterSpacing: "0.01em",
-          marginBottom: image ? 2 : 0,
-        }}
-      >
-        {text}
-      </Typography>
-
-      {image && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 2,
-            padding: 1,
-            backgroundColor: "#fafbfc",
-            borderRadius: "4px",
-            border: "1px solid #e1e4e8",
-          }}
-        >
-          <Box
-            component="img"
-            src={image}
-            alt="Instruction illustration"
-            sx={{
-              width: imageWidth,
-              height: imageHeight,
-              maxWidth: "100%",
-              objectFit: "contain",
-            }}
-          />
-        </Box>
-      )}
+    <Box role="status" aria-live="polite" sx={{ display: "grid", gridTemplateColumns: image ? { xs: "1fr", sm: "minmax(0, 1fr) auto" } : "1fr", gap: 2, alignItems: "center", p: 2, bgcolor: config.background, borderRadius: 2.5 }}>
+      <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.25 }}>
+        <Box aria-hidden="true" sx={{ color: config.color, display: "flex", mt: 0.1 }}>{config.icon}</Box>
+        <Typography sx={{ fontWeight: 650, lineHeight: 1.5 }}>{text}</Typography>
+      </Box>
+      {image && <Box component="img" src={image} alt="Positionnement du tag sur le programmateur" sx={{ width: imageWidth, height: imageHeight, maxWidth: "100%", maxHeight: 170, objectFit: "contain", justifySelf: "center", borderRadius: 2 }} />}
     </Box>
   );
 };

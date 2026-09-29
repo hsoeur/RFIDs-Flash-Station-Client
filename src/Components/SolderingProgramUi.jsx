@@ -1,127 +1,81 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Box, Typography } from "@mui/material";
-import solderingImage from "../assets/rfid.png";
-import StyledContainer from "./StyledContainer";
 import BarcodeManufacturing from "./BarcodeManufacturing";
+import GeneralFunction from "./GeneralFunction";
+import LogTokens from "./LogTokens";
 import OperatorStation from "./OperatorStation";
 import ProgStation from "./ProgStation";
-import LogTokens from "./LogTokens";
 import SequenceInformation from "./SequenceInformation";
-import GeneralFunction from "./GeneralFunction";
+import { ApplicationShell, PageTitle, StatusBadge } from "./StyledContainer";
 
 const SolderingProgramUi = () => {
-  const [barcodeText, setBarcodeText] = useState(""); // État pour stocker le code-barres
+  const [barcodeText, setBarcodeText] = useState("");
   const [solderingData, setSolderingData] = useState(null);
   const [selectedStation, setSelectedStation] = useState(null);
-  const [readTokenResponses, setReadTokenResponses] = useState([]); // Liste pour accumuler les tokens
-
-  const handleBarcodeResponse = (data) => {
-    setSolderingData(data);
-    console.log("Received data in SolderingProgramUi:", data);
-  };
-
-
-  const handleBarcodeTextChange = (text) => {
-    setBarcodeText(text); // Met à jour le texte du code-barres
-  };
+  const [readTokenResponses, setReadTokenResponses] = useState([]);
 
   const handleStationSelect = (station) => {
-    // Le format attendu par l'API: commence par '000' et finit par un chiffre non nul
     if (station === "Station 1") setSelectedStation("0001");
     if (station === "Station 2") setSelectedStation("0002");
     if (station === "Station 3") setSelectedStation("0003");
   };
 
-  const handleAddToken = (newToken) => {
-    // Ajouter un nouveau token à la liste existante
-    setReadTokenResponses((prevTokens) => [...prevTokens, newToken]);
-  };
-
   const handleBackToBarcode = () => {
-    // Réinitialise les états pour revenir au composant BarcodeManufacturing
     setSolderingData(null);
     setSelectedStation(null);
     setBarcodeText("");
     setReadTokenResponses([]);
   };
 
-  
+  const step = !solderingData ? 1 : !selectedStation ? 2 : 3;
+  const pageCopy = step === 1
+    ? { title: "Quel ordre de fabrication souhaitez-vous préparer ?", description: "Scannez l’OF pour charger le programme de soudure actif." }
+    : step === 2
+      ? { title: "Sur quel poste travaillez-vous ?", description: "Le poste choisi sera enregistré dans chaque tag programmé." }
+      : { title: "Prêt à programmer le prochain tag ?", description: "Placez le tag, lancez la programmation et contrôlez le résultat." };
+  const shellStatus = step === 1 ? "En attente d’un OF" : step === 2 ? "OF chargé" : "Poste actif";
+  const shellTone = step === 1 ? "neutral" : step === 2 ? "info" : "success";
 
   return (
-    <StyledContainer 
-      variant="page"
-      title="Programmation des Tags RFID"
-      subtitle="Programmation des tags RFID pour la machine de brasage sélectif"
-      showLogo={false}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          gap: 3,
-          maxWidth: "100%",
-          margin: "0 auto",
-        }}
-      >
-        {/* Colonne gauche : SequenceInformation */}
-        <Box
-          sx={{
-            flex: 2,
-            minWidth: "280px",
-          }}
-        >
-          <SequenceInformation
-            ManufacturingOrderUid={barcodeText || "N/A"}
-            Product={solderingData?.productUid || "N/A"}
-            Program={solderingData?.program || "N/A"}
-            Station={selectedStation || "N/A"}
-            Side={solderingData?.side || "N/A"}
-          />
+    <ApplicationShell status={shellStatus} statusTone={shellTone}>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2, mb: 1 }}>
+        <StatusBadge tone="info">Étape {step} sur 3</StatusBadge>
+        {step > 1 && <Typography variant="body2" color="text.secondary" sx={{ display: { xs: "none", sm: "block" } }}>OF → Poste → Programmation</Typography>}
+      </Box>
+      <PageTitle eyebrow="Production · Brasage sélectif" title={pageCopy.title} description={pageCopy.description} />
+      <SequenceInformation
+        ManufacturingOrderUid={barcodeText || "En attente"}
+        Product={solderingData?.productUid || "—"}
+        Program={solderingData?.program || "—"}
+        Station={selectedStation || "—"}
+        Side={solderingData?.side || "—"}
+      />
 
+      {step === 1 && (
+        <Box sx={{ maxWidth: 820, mx: "auto" }}>
+          <BarcodeManufacturing onResponse={setSolderingData} onBarcodeChange={setBarcodeText} />
+        </Box>
+      )}
+
+      {step === 2 && (
+        <Box sx={{ maxWidth: 920, mx: "auto" }}>
+          <OperatorStation onStationSelect={handleStationSelect} />
+        </Box>
+      )}
+
+      {step === 3 && (
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "minmax(0, 1fr)", xl: "minmax(0, 1.65fr) minmax(320px, 0.75fr)" }, alignItems: "start", gap: 3 }}>
+          <ProgStation selectedStation={selectedStation} solderingData={solderingData} onAddToken={(token) => setReadTokenResponses((current) => [...current, token])} />
+          <LogTokens tokens={readTokenResponses} />
+        </Box>
+      )}
+
+      {step > 1 && (
+        <Box sx={{ display: "flex", justifyContent: { xs: "stretch", sm: "flex-start" }, mt: 3, "& > *": { width: { xs: "100%", sm: "auto" } } }}>
           <GeneralFunction onBackToBarcode={handleBackToBarcode} />
         </Box>
-
-        {/* Colonne principale */}
-        <Box
-          sx={{
-            flex: 4,
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          {!solderingData ? (
-            <BarcodeManufacturing
-              onResponse={handleBarcodeResponse}
-              onBarcodeChange={handleBarcodeTextChange}
-            />
-          ) : (
-            <>
-              {!selectedStation ? (
-                <OperatorStation onStationSelect={handleStationSelect} />
-              ) : (
-                <ProgStation
-                  selectedStation={selectedStation}
-                  solderingData={solderingData}
-                  onAddToken={handleAddToken}
-                />
-              )}
-            </>
-          )}
-        </Box>
-
-        {/* Colonne des tokens */}
-        {solderingData && selectedStation && (
-          <Box
-            sx={{
-              flex: 2,
-              minWidth: "280px",
-            }}
-          >
-            <LogTokens tokens={readTokenResponses} />
-          </Box>
-        )}
-      </Box>
-    </StyledContainer>
+      )}
+    </ApplicationShell>
   );
 };
 
