@@ -3,6 +3,7 @@ import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlin
 import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
+import amphitechLogo from "../assets/amphitech-logo.png";
 
 const toneConfig = {
   neutral: { foreground: "#475467", background: "#F2F4F7", dot: "#98A2B3" },
@@ -26,12 +27,27 @@ export const ApplicationShell = ({ children, status = "Poste prêt", statusTone 
   <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
     <Box component="header" sx={{ bgcolor: "background.paper", borderBottom: "1px solid", borderColor: "divider" }}>
       <Box sx={{ width: "100%", maxWidth: 1600, mx: "auto", px: { xs: 2, sm: 3, lg: 5 }, minHeight: { xs: 64, sm: 72 }, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 0 }}>
-          <Box aria-hidden="true" sx={{ width: 38, height: 38, borderRadius: 2.25, bgcolor: "primary.main", color: "primary.contrastText", display: "grid", placeItems: "center", fontSize: "1.15rem", fontWeight: 800, letterSpacing: "-0.04em", flex: "0 0 auto" }}>A</Box>
-          <Box sx={{ minWidth: 0 }}>
-            <Typography sx={{ fontWeight: 800, letterSpacing: "0.055em", lineHeight: 1.1 }}>AMPHITECH</Typography>
-            <Typography variant="body2" color="text.secondary" noWrap>Programmation RFID</Typography>
-          </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 1.5 }, minWidth: 0 }}>
+          <Box
+            component="img"
+            src={amphitechLogo}
+            alt="Amphitech"
+            sx={{
+              display: "block",
+              width: { xs: 142, sm: 188 },
+              height: { xs: 40, sm: 46 },
+              objectFit: "contain",
+              objectPosition: "left center",
+              flex: "0 0 auto",
+            }}
+          />
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ display: { xs: "none", md: "block" }, pl: 1.5, borderLeft: "1px solid", borderColor: "divider", whiteSpace: "nowrap" }}
+          >
+            Programmation RFID
+          </Typography>
         </Box>
         <StatusBadge tone={statusTone}>{status}</StatusBadge>
       </Box>
